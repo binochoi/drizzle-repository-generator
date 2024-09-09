@@ -16,11 +16,11 @@ const find = <
 ) => {
     const subTableColumns = Object.fromEntries(
         subTablesWith?.map(
-            ([_, subTable]) => Object.entries(subTable._.columns)
+            ([_, subTable]) => Object.entries(getTableColumns(subTable))
         ).flat() || []
     ) as TSubTablesWith extends undefined ? {} : NonNullable<TSubTablesWith>[number][1]['_']['columns'];
     const fullColumns: TTable['_']['columns'] & TSubTablesWithColumns = {
-        ...table._.columns,
+        ...getTableColumns(table),
         ...subTableColumns,
     }
     return <
@@ -39,9 +39,9 @@ const find = <
 }
 function getReturnBase<TEntity extends object, TQueryBase extends Omit<PgSelectBase<any, any, any, any, any, any>, 'where'>>(query: TQueryBase) {
     return {
-        ...query,
-        returnFirst: async (): Promise<TEntity | null> => query.limit(1) as any,
+        returnFirst: async (): Promise<TEntity | null> => (await query.limit(1) as any)[0],
         returnAll: async (): Promise<TEntity[]> => query as any,
+        // withCount
     }
 }
 function createSelectQuery<
@@ -52,9 +52,16 @@ function createSelectQuery<
     table: TTable,
     subTablesWith?: [string, DrizzlePgTable][]
 ) {
+    const subtableColumns = subTablesWith
+        ?.map(([_, table]) => table)
+        .map(getTableColumns)
+        .reduce((prev, current) => ({
+            ...prev,
+            ...current,
+        }))
     return db.select({
+        ...subtableColumns,
         ...getTableColumns(table),
-        ...subTablesWith?.map(([_, table]) => table).map(getTableColumns)
     })
     .from(table)
 }

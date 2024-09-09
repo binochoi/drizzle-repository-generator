@@ -1,74 +1,34 @@
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
 import { DrizzlePgTable } from "./types";
-import { UnionToIntersection } from "type-fest";
-import { eq, getTableColumns } from "drizzle-orm";
-import { pickObjectProps } from "./utils/pickObjectProps";
+import find from "./functions/find";
+import insert from "./functions/insert";
 
-export class Repository<
-    TUserTable extends PgTableWithColumns<any>,
-    TSubTable extends Record<string, DrizzlePgTable>,
-    $SubUser = UnionToIntersection<TSubTable[keyof TSubTable]['$inferSelect']>,
-    $User = TUserTable['$inferSelect'] & $SubUser
-> {
-    private readonly subTables: [keyof TSubTable, TSubTable[keyof TSubTable]][]
-    constructor(
-        private readonly db: PgDatabase<any ,any, any>,
-        private readonly userTable: TUserTable,
-        private readonly _subTables: TSubTable = {} as any,
-    ) {
-        this.subTables = Object.entries(_subTables) as any;
-    }
-    
-    // async isExist(user: Partial<$User>) {
-    //     
-    // }
-    async findOne<TWith extends (keyof TSubTable)[], TReturn extends (TUserTable['$inferSelect'] & UnionToIntersection<TSubTable[TWith[number]]['$inferSelect']>) | null>(
-        whereQuery: Partial<$User>,
-        withTables: TWith
-    ): Promise<TReturn> {
-        const { userTable, subTables } = this;
-        const selectedTables = subTables.filter(([key]) => withTables.includes(key));
-        let query = this.db.select({
-            ...getTableColumns(userTable),
-            ...selectedTables.map(([_, table]) => table).map(getTableColumns)
-        })
-        .from(userTable)
-        .limit(1)
-        
-        Object
-            .entries(whereQuery)
-            .forEach(([key, val]) => {
-                const tables = [userTable, ...subTables.map(([_, table]) => table)];
-                const table = tables.filter((table) => key in table)[0];
-                if(!table) {
-                    return;
-                }
-                query = query.where(eq(table[key], val)) as any;
-            })
-        for(const [_, table] of selectedTables) {
-            query = query.fullJoin(table, eq(userTable.id, table.id)) as any;
+export const Repository = <
+    TTable extends PgTableWithColumns<any>,
+    TSubTables extends Record<TSubTableName, DrizzlePgTable>,
+    TSubTableName extends string,
+>(
+    db: PgDatabase<any ,any, any>,
+    table: TTable,
+    subtablesInput: TSubTables = {} as any,
+    // options?: Record<string, any>
+) => {
+    const subTables: [TSubTableName, TSubTables[TSubTableName]][] = Object.entries(subtablesInput) as any;
+    const withFn = <
+        TWith extends (keyof TSubTables)[],
+        SubTablesWith extends (TSubTableName & TWith[number]) extends never ? undefined : [
+            TSubTableName & TWith[number],
+            TSubTables[(keyof TSubTables) & TWith[number]]
+        ][]
+    >(...tableNamesWith: TWith) => {
+        const subTablesWith = subTables.filter(([key]) => tableNamesWith.includes(key)) as unknown as SubTablesWith;
+        return {
+            find: find(db, table, subTablesWith),
         }
-        const [row] = (await query);
-        return row as TReturn;
     }
-    async insertOne(user: (TUserTable['$inferInsert'] & UnionToIntersection<TSubTable[keyof TSubTable]['$inferInsert']>)) {
-        const { userTable, subTables } = this;
-        return this.db.transaction(async (tx) => {
-            const [{ id }] = await tx.insert(userTable).values(pickObjectProps(userTable, user) as any).returning();
-            await Promise.all(
-                Object.entries(subTables)
-                    .map<DrizzlePgTable>(([_, tables]) => tables as any)
-                    .map(
-                        (subtable) => {
-                            const payload = pickObjectProps(subtable, user);
-                            const isNotInsertionOfThisTable = Object.keys(payload).length === 0;
-                            if(isNotInsertionOfThisTable) {
-                                return;
-                            }
-                            return tx.insert(subtable).values(pickObjectProps(subtable, {...payload, id }))
-                        }
-                    )
-            );
-        })
+    return {
+        with: withFn,
+        find: find(db, table),
+        insert: insert(db, table, subTables),
     }
 }

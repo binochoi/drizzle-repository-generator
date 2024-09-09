@@ -6,12 +6,13 @@ import { Repository } from 'src/Repository.example';
 
 (async () => {
     const repo = Repository(db, user, { local });
+    const data = await repo.insert({ mail: '2' });
     const withFind = await repo
         .with('local')
-        .find({
-            
-        })
-        .returnAll()
+        .find([
+            ['mail', '<', 'z']
+        ])
+        .returnAll();
     const find = await repo
         .find({
             id: 2
