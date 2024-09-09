@@ -13,7 +13,7 @@ export const Repository = <
     subtablesInput: TSubTables = {} as any,
     // options?: Record<string, any>
 ) => {
-    const subTables: [TSubTableName, TSubTables[TSubTableName]][] = Object.entries(subtablesInput) as any;
+    const subTables: [TSubTableName, TSubTables[keyof TSubTables]][] = Object.entries(subtablesInput) as any;
     const withFn = <
         TWith extends (keyof TSubTables)[],
         SubTablesWith extends (TSubTableName & TWith[number]) extends never ? undefined : [
@@ -30,5 +30,8 @@ export const Repository = <
         with: withFn,
         find: find(db, table),
         insert: insert(db, table, subTables),
+        types: {} as {
+            $SubTableKey: keyof TSubTables,
+        }
     }
 }

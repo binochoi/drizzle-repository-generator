@@ -2,13 +2,13 @@
 import { expect, test } from 'vitest'
 import { db } from 'src/mocks/db';
 import { user, userLocal as local } from 'src/mocks/schema';
-import { Repository } from 'src/Repository.example';
+import { Repository } from 'src/Repository';
 
 (async () => {
     const repo = Repository(db, user, { local });
-    const data = await repo.insert({ mail: '2' });
+    repo.types.$SubTableKey
     const withFind = await repo
-        .with('local')
+        .with()
         .find([
             ['mail', '<', 'z']
         ])
