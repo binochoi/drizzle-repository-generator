@@ -12,7 +12,18 @@ const repo = new Repository(db, user, {
         }
     }
 );
-repo.transaction();
+
+db.transaction((tx) => {
+    const { insert, update } = await repo.transaction(tx);
+    await insert();
+    await update();
+})
+
+const tx = repo.transaction()
+await tx.insert();
+await tx.update();
+await tx.rollback();
+await tx.run();
 
 repo
     .with('local', 'oauth')

@@ -31,7 +31,7 @@ const find = <
         const selectQuery = createSelectQuery(db, table, subTablesWith);
         const whereQuery = createWhereQuery(selectQuery, where, fullColumns);
         if(subTablesWith) {
-            const joinQuery = createJoinQuery(whereQuery, subTablesWith);
+            const joinQuery = createJoinQuery(whereQuery, table, subTablesWith);
             return getReturnBase<TEntity, typeof joinQuery>(joinQuery);
         }
         return getReturnBase<TEntity, typeof whereQuery>(whereQuery);

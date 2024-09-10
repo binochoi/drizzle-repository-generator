@@ -4,22 +4,31 @@ import { db } from 'src/mocks/db';
 import { user, userLocal as local } from 'src/mocks/schema';
 import { Repository } from 'src/Repository';
 
-(async () => {
-    const repo = Repository(db, user, { local });
-    repo.types.$SubTableKey
-    const withFind = await repo
-        .with()
-        .find([
-            ['mail', '<', 'z']
-        ])
-        .returnAll();
-    const find = await repo
-        .find({
-            id: 2
-        })
-        .returnFirst()
-})();
+type User = Omit<typeof user.$inferSelect & typeof local.$inferSelect, 'id'>;
 
-// console.log(userRelations.config((a) => )); /* @DELETE  */
-// test('findOne', () => {
-// })
+const users: User[] = [{
+    mail: 'bonoself@gmail.com',
+    name: 'binochoi',
+    password: 'asd123',
+    phoneNumber: '+81 1082918271'
+}]
+const repo = Repository(db, user);
+test('insert', async () => {
+    const data = await repo.insert({
+        password: 'a',
+        mail: 'asdsa',
+    });
+    expect(data).toEqual({ ...users[0], id: 1 });
+});
+// test('find', async () => {
+//     const data = await repo.find({ id: 1 }).returnFirst();
+//     if(!data) {
+//         throw new Error('data is not exist');
+//     }
+//     expect(data).toEqual({
+//         id: 1,
+//         mail: 'bonoself@gmail.com',
+//         name: 'binochoi',
+//         phoneNumber: '+81 1082918271'
+//     });
+// });

@@ -2,6 +2,8 @@ import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
 import { DrizzlePgTable } from "./types";
 import find from "./functions/find";
 import insert from "./functions/insert";
+import update from "./functions/update";
+import remove from "./functions/delete";
 
 export const Repository = <
     TTable extends PgTableWithColumns<any>,
@@ -30,6 +32,8 @@ export const Repository = <
         with: withFn,
         find: find(db, table),
         insert: insert(db, table, subTables),
+        update: update(db, table, subTables),
+        delete: remove(db, table, subTables),
         types: {} as {
             $SubTableKey: keyof TSubTables,
         }

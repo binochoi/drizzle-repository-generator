@@ -1,4 +1,7 @@
 import { PgColumn, PgDatabase, PgSelectBase, PgTableWithColumns } from "drizzle-orm/pg-core"
+import * as A from './functions';
+
+A
 
 type RepositoryParams = [
     db: PgDatabase<any ,any, any>,

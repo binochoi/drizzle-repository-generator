@@ -14,7 +14,7 @@ export const createWhereQuery = <
         getConditionQuery(where, fullColumns)
     );
 
-function getConditionQuery(where: WhereQuery<any>, fullColumns: FullColumns): SQL | undefined {
+export function getConditionQuery(where: WhereQuery<any>, fullColumns: FullColumns): SQL | undefined {
     if(isArrayQueryRow(where)) {
         return getConditionOfArrayQueryRow(where, fullColumns);
     }
