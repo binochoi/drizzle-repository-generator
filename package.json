@@ -1,6 +1,6 @@
 {
   "name": "drizzle-repository-generator",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "",
   "files": [
     "dist"
@@ -26,7 +26,7 @@
     "pg": "^8.12.0",
     "vitest": "^2.0.5",
     "drizzle-kit": "0.22.8",
-    "drizzle-orm": "0.31.2"
+    "pkgroll": "^2.4.2"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -43,8 +43,9 @@
   },
   "keywords": [],
   "dependencies": {
-    "pkgroll": "^2.4.2",
-    "type-fest": "^4.26.0",
-    "typescript": "^5.5.4"
+    "type-fest": "^4.26.0"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "^0.31.2"
   }
 }
