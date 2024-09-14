@@ -1,17 +1,4 @@
-import { PgColumn, PgDatabase, PgSelectBase, PgTableWithColumns } from "drizzle-orm/pg-core"
-import * as A from './functions';
-
-A
-
-type RepositoryParams = [
-    db: PgDatabase<any ,any, any>,
-    table: PgTableWithColumns<any>,
-    remations: Record<string, PgTableWithColumns<any>>,
-    options?: Record<string, any>
-]
-
-type Repository = (...params: RepositoryParams) => PgSelectBase<any, any, any>
-
+import { PgColumn, PgTableWithColumns } from "drizzle-orm/pg-core"
 
 export type DrizzlePgTable = PgTableWithColumns<{
 	dialect: "pg";
