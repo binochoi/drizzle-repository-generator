@@ -3,7 +3,7 @@ import { PgDatabase, PgSelectBase, PgTableWithColumns } from "drizzle-orm/pg-cor
 import { DrizzlePgTable, WhereQuery } from "src/types";
 import { createJoinQuery } from "src/utils/createJoinQuery";
 import { createWhereQuery } from "src/utils/createWhereQuery";
-import { UnionToIntersection } from "type-fest";
+import { Simplify, UnionToIntersection } from "type-fest";
 
 const find = <
     TTable extends PgTableWithColumns<any>,
@@ -24,7 +24,7 @@ const find = <
         ...subTableColumns,
     }
     return <
-        TEntity extends TMainEntity & TSubEntity,
+        TEntity extends Simplify<TMainEntity & TSubEntity>,
         TMainEntity extends TTable['$inferSelect'],
         TSubEntity extends TSubTablesWith extends undefined ? {} : UnionToIntersection<NonNullable<TSubTablesWith>[number][1]['$inferSelect']>,
     >(where: WhereQuery<TEntity>) => {
