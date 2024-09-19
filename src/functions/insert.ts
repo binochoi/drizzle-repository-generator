@@ -1,8 +1,8 @@
 import { getTableColumns } from "drizzle-orm";
-import { PgDatabase, PgTableWithColumns, PgTransaction } from "drizzle-orm/pg-core";
-import { DrizzlePgTable } from "src/types";
+import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
+import { DrizzlePgTable, UnionToIntersection } from "src/types";
 import { pickObjectProps } from "src/utils/pickObjectProps";
-import { SetOptional, UnionToIntersection } from "type-fest";
+import { SetOptional } from "type-fest";
 
 const insert = <
     TTable extends PgTableWithColumns<any>,

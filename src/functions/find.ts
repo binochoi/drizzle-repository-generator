@@ -1,9 +1,8 @@
 import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgSelectBase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable, WhereQuery } from "src/types";
+import { DrizzlePgTable, Simplify, UnionToIntersection, WhereQuery } from "src/types";
 import { createJoinQuery } from "src/utils/createJoinQuery";
 import { createWhereQuery } from "src/utils/createWhereQuery";
-import { Simplify, UnionToIntersection } from "type-fest";
 
 const find = <
     TTable extends PgTableWithColumns<any>,
@@ -28,7 +27,7 @@ const find = <
         TMainEntity extends TTable['$inferSelect'],
         TSubEntity extends TSubTablesWith extends undefined ? {} : UnionToIntersection<NonNullable<TSubTablesWith>[number][1]['$inferSelect']>,
     >(where: WhereQuery<TEntity>) => {
-        const selectQuery = createSelectQuery(db, table, subTablesWith);
+        const selectQuery = createSelectQuery(db, table, subTablesWith || []);
         const whereQuery = createWhereQuery(selectQuery, where, fullColumns);
         if(subTablesWith) {
             const joinQuery = createJoinQuery(whereQuery, table, subTablesWith);
@@ -50,15 +49,15 @@ function createSelectQuery<
 >(
     db: TDatabase,
     table: TTable,
-    subTablesWith?: [string, DrizzlePgTable][]
+    subTablesWith: [string, DrizzlePgTable][]
 ) {
     const subtableColumns = subTablesWith
-        ?.map(([_, table]) => table)
-        .map(getTableColumns)
+        .map(([_, table]) => table)
+        .map((table) => getTableColumns(table))
         .reduce((prev, current) => ({
             ...prev,
             ...current,
-        }))
+        }), {})
     return db.select({
         ...subtableColumns,
         ...getTableColumns(table),

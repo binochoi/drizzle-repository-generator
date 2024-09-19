@@ -1,5 +1,5 @@
 import { PgColumn, PgTableWithColumns } from "drizzle-orm/pg-core"
-
+export * from './types'
 export type DrizzlePgTable = PgTableWithColumns<{
 	dialect: "pg";
 	columns: any;

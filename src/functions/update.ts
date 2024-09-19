@@ -1,9 +1,8 @@
 import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable } from "src/types";
+import { DrizzlePgTable, UnionToIntersection } from "src/types";
 import { getConditionQuery } from "src/utils/createWhereQuery";
 import { pickObjectProps } from "src/utils/pickObjectProps";
-import { SetOptional, UnionToIntersection } from "type-fest";
 
 const update = <
     TTable extends PgTableWithColumns<any>,
@@ -17,7 +16,7 @@ const update = <
         TEntity extends TMainEntity & TSubEntity,
         TMainEntity extends TTable['$inferInsert'],
         TSubEntity extends UnionToIntersection<TSubTablesWith[number][1]['$inferInsert']>,
-        TResult extends Partial<TMainResult & TSubResult>,
+        TResult extends TMainResult & TSubResult,
         TMainResult extends TTable['$inferSelect'],
         TSubResult extends UnionToIntersection<TSubTablesWith[number][1]['$inferSelect']>,
     >(data: Partial<TEntity>) => {

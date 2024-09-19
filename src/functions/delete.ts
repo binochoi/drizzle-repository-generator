@@ -1,9 +1,8 @@
-import { eq, getTableColumns } from "drizzle-orm";
-import { PgDatabase, PgTableWithColumns, PgTransaction } from "drizzle-orm/pg-core";
-import { DrizzlePgTable } from "src/types";
-import { createWhereQuery, getConditionQuery } from "src/utils/createWhereQuery";
+import { getTableColumns } from "drizzle-orm";
+import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
+import { DrizzlePgTable, UnionToIntersection } from "src/types";
+import { getConditionQuery } from "src/utils/createWhereQuery";
 import { pickObjectProps } from "src/utils/pickObjectProps";
-import { SetOptional, UnionToIntersection } from "type-fest";
 
 const update = <
     TTable extends PgTableWithColumns<any>,
