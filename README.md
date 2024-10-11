@@ -1,6 +1,5 @@
 ## TODO
 - DML 할 때 리턴 타입이 payload에 따라 달라져야 함
-- pagination 함수
 - Promise 반환 시 타입에 record 데이터도 껴있는 문제
 
 # prerequisites
@@ -39,7 +38,3 @@ await db.transaction((tx) => {
     await sessionRepo.insert(session);
 })
 ```
-### move
-WIP
-### paginate
-WIP
