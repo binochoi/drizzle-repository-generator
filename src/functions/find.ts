@@ -26,11 +26,12 @@ const find = <
         TEntity extends Simplify<TMainEntity & TSubEntity>,
         TMainEntity extends TTable['$inferSelect'],
         TSubEntity extends TSubTablesWith extends undefined ? {} : UnionToIntersection<NonNullable<TSubTablesWith>[number][1]['$inferSelect']>,
-    >(where: WhereQuery<TEntity>) => {
+    >(where?: WhereQuery<TEntity>) => {
         const selectQuery = createSelectQuery(db, table, subTablesWith || []);
-        const whereQuery = createWhereQuery(selectQuery, where, fullColumns);
+        const whereQuery = createWhereQuery(selectQuery, where || {}, fullColumns);
+        const query = where ? whereQuery : selectQuery;
         if(subTablesWith) {
-            const joinQuery = createJoinQuery(whereQuery, table, subTablesWith);
+            const joinQuery = createJoinQuery(query, table, subTablesWith);
             return getReturnBase<TEntity, typeof joinQuery>(joinQuery);
         }
         return getReturnBase<TEntity, typeof whereQuery>(whereQuery);
