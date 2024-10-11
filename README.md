@@ -37,6 +37,11 @@ await repo
         ['createdAt', '>', new Date()],
     )
     .returnAll()
+    
+repo.find().paginate({
+    page: 1,
+    count: 20,
+});
 userRepo.insert(data).returning();
 userRepo
     .update({ password })
