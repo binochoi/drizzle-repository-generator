@@ -41,9 +41,9 @@ jobs:
       - name: migrate database
         run: pnpm db:migrate
         env:
-          DBURL: "postgres://postgres:postgres@localhost:5432/postgres"
+          DB_URL: "postgres://postgres:postgres@localhost:5432/postgres"
 
       - name: Run the mock tests function
         run: pnpm test
         env:
-          DBURL: postgres://postgres:postgres@localhost:5432/postgres
+          DB_URL: postgres://postgres:postgres@localhost:5432/postgres
