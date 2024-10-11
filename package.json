@@ -16,6 +16,7 @@
     "db:migrate.generate": "rimraf .cache/.migrations && drizzle-kit generate --config=./drizzle.config.ts",
     "db:migrate.push": "npx tsx ./src/mocks/migrate.ts && drizzle-kit push",
     "test": "vitest",
+    "dev:test": "env-cmd run-s db:migrate test",
     "whiteboard": "pnpm tsx ./whiteboard.ts"
   },
   "devDependencies": {
