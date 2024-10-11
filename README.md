@@ -11,12 +11,12 @@
 ### find
 ```ts
 const repo = Repository(db, user);
-await repo.find().returnFirst();
+await repo.find({ id }).returnFirst();
 ```
 ### find with
 ```ts
 const repo = Repository(db, user, { local });
-await repo.with('local').find().returnFirst();
+await repo.with('local').find({ id }).returnFirst();
 ```
 ### insert
 ```ts
