@@ -17,12 +17,18 @@ const repo = Repository(db, user, { local });
 test('try to connect db', async () => client.connect())
 describe('insert', () => {
     test('insert one', async () => {
-        repo.insert({
-            ...userMocks[0],
-        });
-    })
-    test('insert with join', async () => {
-        const record = await repo.find().returnFirst();
+        const record = await repo.insert(userMocks[0]);
         expect(record).toMatchObject(userMocks[0]);
+    })
+})
+describe('find', () => {
+    test('find with join', async () => {
+        const record = await repo.with('local').find().returnFirst();
+        expect(record).toMatchObject(userMocks[0]);
+    })
+})
+describe('delete', () => {
+    test('delete all', async () => {
+        // await repo.delete();
     })
 })

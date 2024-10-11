@@ -7,6 +7,5 @@ export default defineConfig({
   breakpoints: true,
   dbCredentials: {
     url: process.env.DB_URL || '',
-    ssl: false,
   },
 });

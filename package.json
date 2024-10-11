@@ -14,8 +14,8 @@
     "build": "pkgroll --clean-dist --minify",
     "db:migrate": "run-s db:migrate.*",
     "db:migrate.generate": "rimraf .cache/.migrations && drizzle-kit generate --config=./drizzle.config.ts",
-    "db:migrate.push": "env-cmd npx tsx ./src/mocks/migrate.ts && drizzle-kit push --verbose",
-    "test": "vitest",
+    "db:migrate.push": "env-cmd npx tsx ./src/mocks/migrate.ts && drizzle-kit push",
+    "test": "env-cmd vitest",
     "whiteboard": "pnpm tsx ./whiteboard.ts"
   },
   "devDependencies": {

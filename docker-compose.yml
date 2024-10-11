@@ -1,11 +1,11 @@
 
 services:
   postgres:
-    image: postgres:15
+    image: postgres:16
     container_name: drizzle-repository-generator-pg
     environment:
-      POSTGRES_USER: abc123
-      POSTGRES_PASSWORD: abc123
-      POSTGRES_DB: tester
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
-      - "13131:5432"
+      - "5432:5432"
