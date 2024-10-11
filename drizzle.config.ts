@@ -1,5 +1,4 @@
 import { defineConfig } from 'drizzle-kit';
-import { connection } from 'src/mocks/db';
 
 export default defineConfig({
   dialect: 'postgresql',
@@ -7,7 +6,7 @@ export default defineConfig({
   out: './.cache/.migrations',
   breakpoints: true,
   dbCredentials: {
-    ...connection,
+    url: process.env.DB_URL || '',
     ssl: false,
   },
 });

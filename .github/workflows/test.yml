@@ -1,0 +1,49 @@
+name: Running All Tests
+
+on: [push]
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      # run steps required in the workflow
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 14.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: migrate database
+        run: pnpm db:migrate
+        env:
+          DBURL: "postgres://postgres:postgres@localhost:5432/postgres"
+
+      - name: Run the mock tests function
+        run: pnpm test
+        env:
+          DBURL: postgres://postgres:postgres@localhost:5432/postgres
