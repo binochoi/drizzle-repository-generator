@@ -40,16 +40,15 @@ const update = <
                         const query = tx.delete(subtable);
                         return query.where(
                             getConditionQuery(payload, getTableColumns(subtable))
-                        );
+                        )
+                        .returning()
+                        .then(([row]) => row);
                     }
                 )
             const row = await Promise.all(
                 result
                     .map(async (query) => {
                         const row = (await query) || [];
-                        if(!row) {
-                            return [];
-                        }
                         return Object.entries(row);
                     })
             )
