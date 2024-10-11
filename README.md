@@ -1,7 +1,7 @@
 ## TODO
 - DML 할 때 리턴 타입이 payload에 따라 달라져야 함
+- pagination 함수
 - Promise 반환 시 타입에 record 데이터도 껴있는 문제
-
 
 # prerequisites
 각 테이블들은 같은 이름의 column을 소지하면 안 됨.
