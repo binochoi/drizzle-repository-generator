@@ -1,5 +1,5 @@
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable } from "./types";
+import { DrizzlePgTable, Simplify } from "./types";
 import find from "./functions/find";
 import insert from "./functions/insert";
 import update from "./functions/update";
@@ -35,6 +35,8 @@ export const Repository = <
         update: update(db, table, subTables),
         delete: remove(db, table, subTables),
         types: {} as {
+            $inferInsert: Simplify<TTable['$inferInsert'] & TSubTables[keyof TSubTables]['$inferInsert']>,
+            $inferSelect: Simplify<TTable['$inferSelect'] & TSubTables[keyof TSubTables]['$inferSelect']>,
             $SubTableKey: keyof TSubTables,
         }
     }
