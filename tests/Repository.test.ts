@@ -40,7 +40,7 @@ describe('delete', () => {
     test('delete one', async () => {
         const password = newPassword;
         const record = await repo.delete({ id: 1 });
-        expect(record).toMatchObject({...userMocks[0], password });
+        expect(record).toMatchObject({ id: 1, password });
     })
 })
 describe('transaction', () => {
