@@ -21,5 +21,5 @@ export type UnionToIntersection<Union> = (
 
 export type AnyToObj<T> = T extends any ? {} : T;
 export type SubTablesWith = [string, DrizzlePgTable][];
-export type SubTypesToInsertEntity<T extends SubTablesWith> = UnionToIntersection<AnyToObj<T[number][1]['$inferInsert']>>;
+export type SubTypesToInsertEntity<T extends SubTablesWith> = T[number][1]['$inferInsert'];
 export type SubTypesToSelectEntity<T extends SubTablesWith> = UnionToIntersection<AnyToObj<T[number][1]['$inferSelect']>>;

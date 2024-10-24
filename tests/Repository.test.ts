@@ -28,19 +28,22 @@ describe('find', () => {
         expect(record).toMatchObject(userMocks[0]);
     })
 })
-const newPassword = 'gooooo';
+const updateMock = { name: 'a', password: 'gooooo' };
 describe('update', () => {
     test('update one', async () => {
-        const password = newPassword;
-        const record = await repo.update({ name: 'a' }).where({ id: 1 });
-        expect(record).toMatchObject({ id: 1, password });
+        const record = await repo.update(updateMock).where({ id: 1 });
+        const { password: _, ...restMock } = userMocks[0];
+        expect(record).toMatchObject({
+            ...restMock,
+            ...updateMock,
+            id: 1,
+        });
     })
 })
 describe('delete', () => {
     test('delete one', async () => {
-        const password = newPassword;
-        const record = await repo.delete({ id: 1 });
-        expect(record).toMatchObject({ id: 1, password });
+        const record = await repo.delete(updateMock).returning();
+        expect(record).toMatchObject({ ...userMocks[0], ...updateMock,  id: 1 });
     })
 })
 describe('transaction', () => {
