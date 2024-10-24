@@ -1,6 +1,6 @@
 import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable, UnionToIntersection } from "src/types";
+import { DrizzlePgTable, SubTypesToInsertEntity, SubTypesToSelectEntity, UnionToIntersection } from "src/types";
 import { getConditionQuery } from "src/utils/createWhereQuery";
 import { pickObjectProps } from "src/utils/pickObjectProps";
 
@@ -15,10 +15,10 @@ const update = <
     return <
         TEntity extends TMainEntity & TSubEntity,
         TMainEntity extends TTable['$inferInsert'],
-        TSubEntity extends UnionToIntersection<TSubTablesWith[number][1]['$inferInsert']>,
-        TResult extends Partial<TMainResult & TSubResult>,
+        TSubEntity extends SubTypesToInsertEntity<TSubTablesWith>,
+        TResult extends TMainResult & TSubResult,
         TMainResult extends TTable['$inferSelect'],
-        TSubResult extends UnionToIntersection<TSubTablesWith[number][1]['$inferSelect']>,
+        TSubResult extends SubTypesToSelectEntity<TSubTablesWith>,
     >(data: Partial<TEntity>) => db.transaction(
         async tx => {
             const query = tx.delete(table);

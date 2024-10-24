@@ -1,12 +1,13 @@
 import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable, UnionToIntersection } from "src/types";
+import { DrizzlePgTable, SubTablesWith, UnionToIntersection } from "src/types";
 import { pickObjectProps } from "src/utils/pickObjectProps";
+import { SubTypesToInsertEntity, SubTypesToSelectEntity } from 'src/types/types';
 import { SetOptional } from "type-fest";
 
 const insert = <
     TTable extends PgTableWithColumns<any>,
-    TSubTablesWith extends [string, DrizzlePgTable][],
+    TSubTablesWith extends SubTablesWith,
 >(
     db: PgDatabase<any ,any, any>,
     table: TTable,
@@ -15,10 +16,10 @@ const insert = <
     return <
         TEntity extends TMainEntity & TSubEntity,
         TMainEntity extends TTable['$inferInsert'],
-        TSubEntity extends UnionToIntersection<TSubTablesWith[number][1]['$inferInsert']>,
+        TSubEntity extends SubTypesToInsertEntity<TSubTablesWith>,
         TResult extends TMainResult & TSubResult,
         TMainResult extends TTable['$inferSelect'],
-        TSubResult extends UnionToIntersection<TSubTablesWith[number][1]['$inferSelect']>,
+        TSubResult extends SubTypesToSelectEntity<TSubTablesWith>,
     >(data: SetOptional<TEntity, 'id'>) => db.transaction(
         async tx => {
             const values = pickObjectProps(data, table) as any;

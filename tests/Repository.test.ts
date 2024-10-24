@@ -14,7 +14,7 @@ const userMocks: User[] = [{
     phoneNumber: '+81 1082918271',
 }]
 const repo = Repository(db, user, { local });
-
+const userRepo = Repository(db, user);
 test('try to connect db', async () => client.connect())
 describe('insert', () => {
     test('insert one', async () => {
@@ -32,7 +32,7 @@ const newPassword = 'gooooo';
 describe('update', () => {
     test('update one', async () => {
         const password = newPassword;
-        const record = await repo.update({ password }).where({ id: 1 });
+        const record = await repo.update({ name: 'a' }).where({ id: 1 });
         expect(record).toMatchObject({ id: 1, password });
     })
 })

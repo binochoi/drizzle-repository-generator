@@ -1,3 +1,5 @@
+import { DrizzlePgTable } from ".";
+
 export type Simplify<T> = {[KeyType in keyof T]: T[KeyType]} & {};
 export type UnionToIntersection<Union> = (
 	// `extends unknown` is always going to be the case and is used to convert the
@@ -15,3 +17,9 @@ export type UnionToIntersection<Union> = (
 	// The `& Union` is to allow indexing by the resulting type
 	? Intersection & Union
 	: never;
+	
+
+export type AnyToObj<T> = T extends any ? {} : T;
+export type SubTablesWith = [string, DrizzlePgTable][];
+export type SubTypesToInsertEntity<T extends SubTablesWith> = UnionToIntersection<AnyToObj<T[number][1]['$inferInsert']>>;
+export type SubTypesToSelectEntity<T extends SubTablesWith> = UnionToIntersection<AnyToObj<T[number][1]['$inferSelect']>>;
