@@ -1,62 +1,32 @@
-import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable, SubTypesToInsertEntity, SubTypesToSelectEntity, UnionToIntersection } from "src/types";
-import { getConditionQuery } from "src/utils/createWhereQuery";
-import { pickObjectProps } from "src/utils/pickObjectProps";
+import { EntityBase, QueryResult, SubTablesWith, SubTypesToInsertEntity, SubTypesToSelectEntity, UnionToIntersection } from "src/types";
+import { createDeleteQuery } from "./delete/index";
+import { mergeObjectArray } from "src/utils/mergeObjectArray";
+import { createThenable } from "src/utils/createThenable";
 
 const update = <
     TTable extends PgTableWithColumns<any>,
-    TSubTablesWith extends [string, DrizzlePgTable][],
+    TSubTablesWith extends SubTablesWith,
 >(
     db: PgDatabase<any ,any, any>,
     table: TTable,
     subTablesWith: TSubTablesWith,
 ) => {
     return <
-        TEntity extends TMainEntity & TSubEntity,
-        TMainEntity extends TTable['$inferInsert'],
-        TSubEntity extends SubTypesToInsertEntity<TSubTablesWith>,
-        TResult extends TMainResult & TSubResult,
-        TMainResult extends TTable['$inferSelect'],
-        TSubResult extends SubTypesToSelectEntity<TSubTablesWith>,
-    >(data: Partial<TEntity>) => db.transaction(
-        async tx => {
-            const query = tx.delete(table);
-            const [mainData] = await query.where(
-                getConditionQuery(
-                    pickObjectProps(data, getTableColumns(table)),
-                    getTableColumns(table)
-                )
-            ).returning();
-            const result = subTablesWith
-                .map<DrizzlePgTable>(([_, tables]) => tables as any)
-                .map(
-                    (subtable) => {
-                        const payload = pickObjectProps(data, getTableColumns(subtable));
-                        const isNotInsertionOfThisTable = Object.keys(payload).length === 0;
-                        if(isNotInsertionOfThisTable) {
-                            return;
-                        }
-                        const query = tx.delete(subtable);
-                        return query.where(
-                            getConditionQuery(payload, getTableColumns(subtable))
+        TResult extends QueryResult<TTable, TSubTablesWith>,
+    >(data: Partial<EntityBase<TTable, TSubTablesWith>>) => ({
+                ...createThenable<TResult>(
+                    async () => db.transaction(async (tx) => {
+                        const rows = await Promise.all(
+                            createDeleteQuery(tx, table, subTablesWith)(data)
+                                .filter((q) => q)
+                                .map((q) => q!.returning())
                         )
-                        .returning()
-                        .then(([row]) => row);
+                        return mergeObjectArray(rows) as TResult;
                     }
-                )
-            const row = await Promise.all(
-                result
-                    .map(async (query) => {
-                        const row = (await query) || [];
-                        return Object.entries(row);
-                    })
-            )
-            return {
-                ...mainData,
-                ...Object.fromEntries(row.flat()),
-            } as TResult
-        })
+                )),
+                toSQLarray: () => createDeleteQuery(db, table, subTablesWith)(data).map((q) => q?.toSQL())
+            })
 }
 
 export default update;

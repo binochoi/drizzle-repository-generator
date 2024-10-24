@@ -1,4 +1,5 @@
 import { PgColumn, PgTableWithColumns } from "drizzle-orm/pg-core"
+import { SubTablesWith, SubTypesToInsertEntity, SubTypesToSelectEntity } from "./types";
 export * from './types'
 export type DrizzlePgTable = PgTableWithColumns<{
 	dialect: "pg";
@@ -18,3 +19,12 @@ export type WhereQuery<TEntity extends Entity> = WhereObjectQuery<TEntity> | Whe
 export type FullColumns = {
     [K: string]: PgColumn<any>
 };
+
+export type EntityBase<
+TTable extends PgTableWithColumns<any>,
+TSubTablesWith extends SubTablesWith
+> = TTable['$inferInsert'] & SubTypesToInsertEntity<TSubTablesWith>;
+export type QueryResult<
+TTable extends PgTableWithColumns<any>,
+TSubTablesWith extends SubTablesWith
+> = TTable['$inferSelect'] & SubTypesToSelectEntity<TSubTablesWith>
