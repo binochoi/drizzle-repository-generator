@@ -4,7 +4,7 @@ import { createDeleteQuery } from "./delete/index";
 import { mergeObjectArray } from "src/utils/mergeObjectArray";
 import { createThenable } from "src/utils/createThenable";
 
-const update = <
+const remove = <
     TTable extends PgTableWithColumns<any>,
     TSubTablesWith extends SubTablesWith,
 >(
@@ -29,4 +29,4 @@ const update = <
             })
 }
 
-export default update;
+export default remove;
