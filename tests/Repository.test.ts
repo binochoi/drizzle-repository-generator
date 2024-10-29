@@ -42,7 +42,7 @@ describe('update', () => {
 })
 describe('delete', () => {
     test('delete one', async () => {
-        const record = await repo.delete(updateMock).returning();
+        const record = await repo.delete(updateMock);
         expect(record).toMatchObject({ ...userMocks[0], ...updateMock,  id: 1 });
     })
 })
