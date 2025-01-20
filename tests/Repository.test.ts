@@ -58,6 +58,19 @@ describe('transaction', () => {
         expect(list).toHaveLength(3);
     });
 })
+test('upsert', async () => {
+    await userRepo.insert({
+        id: 112,
+        name: 'mcdonald trump'
+    })
+    const upsertMock = {
+        id: 112,
+        name: 'johnzaller',
+    };
+    await userRepo.insert(upsertMock, { onConflict: 'update' })
+    const user = await userRepo.find({ id: 112 }).returnFirst();
+    expect(user).toMatchObject(upsertMock);
+});
 test('drop all tables', async () => {
     await db
         .execute(sql`

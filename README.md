@@ -21,6 +21,10 @@ await repo.with('local').find({ id }).returnFirst();
 ```ts
 await repo.insert(data);
 ```
+### upsert
+```ts
+await repo.insert(data, { onConflict: 'update' });
+```
 ### update
 ```ts
 await repo.update(data).where({ id: 1 });

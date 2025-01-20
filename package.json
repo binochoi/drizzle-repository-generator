@@ -1,6 +1,6 @@
 {
   "name": "drizzle-repository-generator",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "",
   "files": [
     "dist"
@@ -16,8 +16,7 @@
     "db:migrate.generate": "rimraf .cache/.migrations && drizzle-kit generate --config=./drizzle.config.ts",
     "db:migrate.push": "npx tsx ./src/mocks/migrate.ts && drizzle-kit push",
     "test": "vitest",
-    "dev:test": "env-cmd run-s db:migrate test",
-    "whiteboard": "pnpm tsx ./whiteboard.ts"
+    "dev:test": "env-cmd run-s db:migrate test"
   },
   "devDependencies": {
     "@binochoi/eslint-config-typescript": "^0.0.25",

@@ -20,10 +20,19 @@ const insert = <
         TResult extends TMainResult & TSubResult,
         TMainResult extends TTable['$inferSelect'],
         TSubResult extends SubTypesToSelectEntity<TSubTablesWith>,
-    >(data: SetOptional<TEntity, 'id'>) => db.transaction(
+    >(data: SetOptional<TEntity, 'id'>, options?: {
+        onConflict: 'update',
+    }) => db.transaction(
         async tx => {
             const values = pickObjectProps(data, table) as any;
-            const [mainData] = await tx.insert(table).values(values).returning();
+            let query = tx.insert(table).values(values);
+            if(options?.onConflict === 'update') {
+                query = query.onConflictDoUpdate({
+                    target: table.id,
+                    set: data,
+                }) as any;
+            }
+            const [mainData] = await query.returning();
             const { id } = mainData;
             const result = subTablesWith
                 .map<DrizzlePgTable>(([_, tables]) => tables as any)
@@ -34,7 +43,14 @@ const insert = <
                         if(isNotInsertionOfThisTable) {
                             return;
                         }
-                        return tx.insert(subtable).values({ ...payload, id }).returning();
+                        let query = tx.insert(subtable).values({ ...payload, id });
+                        if(options?.onConflict === 'update') {
+                            query = query.onConflictDoUpdate({
+                                target: subtable.id,
+                                set: payload,
+                            }) as any;
+                        }
+                        return query.returning();
                     }
                 )
             const row = await Promise.all(
