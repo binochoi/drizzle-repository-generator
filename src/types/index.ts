@@ -13,7 +13,9 @@ export type Entity = {
 };
 export type WhereObjectQuery<TEntity extends Entity> = Partial<TEntity>;
 export type WhereCondition = '=' | '<' | '<=' | '>' | '>=' | 'like';
-export type WhereArrayQueryRow<TEntity extends Entity> = [keyof TEntity, WhereCondition, TEntity[keyof TEntity]];
+export type WhereArrayQueryRow<TEntity extends Entity> = {
+    [K in keyof TEntity]: [K, WhereCondition, TEntity[K]]
+}[keyof TEntity];
 export type WhereArrayQuery<TEntity extends Entity> = WhereArrayQueryRow<TEntity>[];
 export type WhereQuery<TEntity extends Entity> = WhereObjectQuery<TEntity> | WhereArrayQuery<TEntity> | WhereArrayQueryRow<TEntity>
 export type FullColumns = {
