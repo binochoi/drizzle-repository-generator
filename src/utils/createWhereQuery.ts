@@ -15,6 +15,9 @@ export const createWhereQuery = <
     );
 
 export function getConditionQuery(where: WhereQuery<any>, fullColumns: FullColumns): SQL | undefined {
+    if(isSqlQuery(where)) {
+        return where;
+    }
     if(isArrayQueryRow(where)) {
         return getConditionOfArrayQueryRow(where, fullColumns);
     }
@@ -37,4 +40,7 @@ function isArrayQueryRow(where: WhereQuery<any>): where is WhereArrayQueryRow<an
 }
 function isArrayQuery(where: WhereQuery<any>): where is WhereArrayQuery<any> {
     return Array.isArray(where);
+}
+function isSqlQuery(where: WhereQuery<any>): where is SQL {
+    return typeof where === 'function';
 }
