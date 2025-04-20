@@ -20,6 +20,13 @@ await repo.find({ id }).returnFirst();
 ```ts
 const repo = Repository(db, user, { local });
 await repo.with('local').find({ id }).returnFirst();
+await repo.with('local').find(['id', '=', 2]).returnFirst();
+await repo.with('local').find([
+    ['id', '>', 20],
+    ['name', '=', 'john'],
+]).returnMany({
+    limit: 20,
+});
 ```
 ### insert
 ```ts
