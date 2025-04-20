@@ -41,7 +41,7 @@ const find = <
 function getReturnBase<TEntity extends object, TQueryBase extends Omit<PgSelectBase<any, any, any, any, any, any>, 'where'>>(query: TQueryBase) {
     return {
         returnFirst: async (): Promise<TEntity | null> => (await query.limit(1) as any)[0],
-        returnAll: async (): Promise<TEntity[]> => (await query.limit(200) as any)[0],
+        returnAll: async (): Promise<TEntity[]> => (await query as any),
         // withCount
     }
 }
