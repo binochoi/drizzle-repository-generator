@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: pnpm i
       - name: setup
-        run: pnpm setup
+        run: pnpm run setup
 
       - name: migrate database
         run: pnpm db:migrate
