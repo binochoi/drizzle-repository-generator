@@ -5,6 +5,11 @@ import { createJoinQuery } from "src/utils/createJoinQuery";
 import { createWhereQuery } from "src/utils/createWhereQuery";
 import { mergeObjectArray } from "src/utils/mergeObjectArray";
 
+type ReturningParams = {
+    offset?: number,
+    limit?: number,
+}
+
 const find = <
     TTable extends PgTableWithColumns<any>,
     TSubTablesWith extends [string, DrizzlePgTable][] | undefined,
@@ -40,8 +45,12 @@ const find = <
 }
 function getReturnBase<TEntity extends object, TQueryBase extends Omit<PgSelectBase<any, any, any, any, any, any>, 'where'>>(query: TQueryBase) {
     return {
-        returnFirst: async (): Promise<TEntity | null> => (await query.limit(1) as any)[0],
-        returnAll: async (): Promise<TEntity[]> => (await query as any),
+        returnFirst: async (): Promise<TEntity | null> => (await query.limit(1) as any)[0] || null,
+        returnMany: async ({ limit, offset }: ReturningParams = {}): Promise<TEntity[]> => {
+            return (query as any)
+            .offset(offset || 0)
+            .limit(limit || 200);
+        },
         // withCount
     }
 }

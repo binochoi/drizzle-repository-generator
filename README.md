@@ -6,6 +6,10 @@
 각 테이블들은 같은 이름의 column을 소지하면 안 됨.
 해당 제약조건을 지킨다면 모든 table을 하나의 entity처럼 다룰 수 있음.
 
+# compatible
+- postgres implemented only
+- sqlite considering
+
 # How to use
 ### find
 ```ts
@@ -42,3 +46,8 @@ await db.transaction((tx) => {
     await sessionRepo.insert(session);
 })
 ```
+
+
+# TODO
+- [] selective returning column
+- [] selective returning or not

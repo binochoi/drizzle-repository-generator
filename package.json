@@ -1,6 +1,6 @@
 {
   "name": "drizzle-repository-generator",
-  "version": "0.0.18",
+  "version": "0.1.2",
   "description": "",
   "files": [
     "dist"
@@ -10,19 +10,24 @@
   },
   "license": "MIT",
   "scripts": {
+    "setup": "cp .env.example .env",
     "dev": "pkgroll --clean-dist --sourcemap=inline --watch",
     "build": "pkgroll --clean-dist --minify",
     "db:migrate": "run-s db:migrate.*",
-    "db:migrate.generate": "rimraf .cache/.migrations && drizzle-kit generate --config=./drizzle.config.ts",
-    "db:migrate.push": "npx tsx ./src/mocks/migrate.ts && drizzle-kit push",
-    "test": "vitest",
-    "dev:test": "env-cmd run-s db:migrate test"
+    "db:migrate.rm": "rimraf .cache/.migrations",
+    "db:migrate.generate": "dotenv -e .env -- drizzle-kit generate --config=./drizzle.config.ts",
+    "db:migrate.only": "dotenv -e .env -- npx tsx ./src/mocks/migrate.ts",
+    "db:migrate.push": "dotenv -e .env -- drizzle-kit push",
+    "test": "run-s db:migrate test.only; run-s drop-tables",
+    "test.only": "dotenv -e .env -- vitest run",
+    "drop-tables": "dotenv -e .env -- npx tsx ./scripts/drop-tables.ts"
   },
   "devDependencies": {
     "@binochoi/eslint-config-typescript": "^0.0.25",
     "@types/pg": "^8.11.8",
     "@typescript-eslint/eslint-plugin": "^7.7.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "dotenv-cli": "^8.0.0",
     "drizzle-kit": "0.22.8",
     "drizzle-orm": "^0.31.2",
     "env-cmd": "^10.1.0",

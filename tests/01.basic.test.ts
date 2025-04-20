@@ -1,4 +1,3 @@
-// sum.test.js
 import { describe, expect, test } from 'vitest'
 import { db, client } from 'src/mocks/db';
 import { user, userLocal as local, userOauth as oauth } from 'src/mocks/schema';
@@ -71,14 +70,3 @@ test('upsert', async () => {
     const user = await userRepo.find({ id: 112 }).returnFirst();
     expect(user).toMatchObject(upsertMock);
 });
-test('drop all tables', async () => {
-    await db
-        .execute(sql`
-            DROP TABLE IF EXISTS
-                ${user},
-                ${local},
-                ${oauth}
-            CASCADE;
-        `)
-        .execute();
-})

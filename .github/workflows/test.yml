@@ -37,6 +37,8 @@ jobs:
         run: npm install -g pnpm
       - name: Install dependencies
         run: pnpm i
+      - name: setup
+        run: pnpm setup
 
       - name: migrate database
         run: pnpm db:migrate

@@ -1,6 +1,6 @@
 import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable, SubTypesToInsertEntity, SubTypesToSelectEntity, UnionToIntersection } from "src/types";
+import { DrizzlePgTable, SubTypesToInsertEntity, SubTypesToSelectEntity, UnionToIntersection, WhereQuery } from "src/types";
 import { getWhereConditionQuery } from "src/utils/createWhereQuery";
 import { pickObjectProps } from "src/utils/pickObjectProps";
 
@@ -14,14 +14,14 @@ const update = <
 ) => {
     return <
         TEntity extends TMainEntity & TSubEntity,
-        TMainEntity extends TTable['$inferInsert'],
-        TSubEntity extends SubTypesToInsertEntity<TSubTablesWith>,
+        TMainEntity extends TTable['$inferSelect'],
+        TSubEntity extends SubTypesToSelectEntity<TSubTablesWith>,
         TResult extends TMainResult & TSubResult,
         TMainResult extends TTable['$inferSelect'],
         TSubResult extends SubTypesToSelectEntity<TSubTablesWith>,
     >(data: Partial<TEntity>) => {
         return {
-            where: (where: Partial<TMainEntity & TSubEntity>) => db.transaction(
+            where: (where: WhereQuery<TEntity>) => db.transaction(
                 async tx => {
                     const payload = pickObjectProps(data, getTableColumns(table)) as any;
                     const whereQuery = getWhereConditionQuery(where, getTableColumns(table));

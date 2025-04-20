@@ -15,27 +15,26 @@ export const createWhereQuery = <
     );
 
 export function getWhereConditionQuery(where: WhereQuery<any>, fullColumns: FullColumns): SQL | undefined {
-    if(isSqlQuery(where)) {
-        return where;
-    }
-    if(isArrayQueryRow(where)) {
-        return getConditionOfArrayQueryRow(where, fullColumns);
-    }
-    else if(isArrayQuery(where)) {
+    if(is2DArrayQuery(where)) {
         return and(
             ...where.map((row) => getConditionOfArrayQueryRow(row, fullColumns)),
         )
-    } else {
-        return and(
-            ...Object.entries(where).map(([key, val]) => eq(fullColumns[key], val)),
-        )
     }
+    if(isArrayQuery(where)) {
+        return getConditionOfArrayQueryRow(where as any, fullColumns);
+    }
+    if(isSqlQuery(where)) {
+        return where;
+    }
+    return and(
+        ...Object.entries(where).map(([key, val]) => eq(fullColumns[key], val)),
+    )
 }
 function getConditionOfArrayQueryRow(where: WhereArrayQueryRow<any>, fullColumns: FullColumns) {
     const [key, condition, val] = where;
-    return getWhereCondition(condition)(fullColumns[key as any], val);
+    return getWhereCondition(condition)(val, fullColumns[key as any]);
 }
-function isArrayQueryRow(where: WhereQuery<any>): where is WhereArrayQueryRow<any> {
+function is2DArrayQuery(where: WhereQuery<any>): where is WhereArrayQueryRow<any> {
     return Array.isArray(where) && Array.isArray(where[0]);
 }
 function isArrayQuery(where: WhereQuery<any>): where is WhereArrayQuery<any> {
