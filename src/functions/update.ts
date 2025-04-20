@@ -1,7 +1,7 @@
 import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
 import { DrizzlePgTable, SubTypesToInsertEntity, SubTypesToSelectEntity, UnionToIntersection } from "src/types";
-import { getConditionQuery } from "src/utils/createWhereQuery";
+import { getWhereConditionQuery } from "src/utils/createWhereQuery";
 import { pickObjectProps } from "src/utils/pickObjectProps";
 
 const update = <
@@ -24,7 +24,7 @@ const update = <
             where: (where: Partial<TMainEntity & TSubEntity>) => db.transaction(
                 async tx => {
                     const payload = pickObjectProps(data, getTableColumns(table)) as any;
-                    const whereQuery = getConditionQuery(where, getTableColumns(table));
+                    const whereQuery = getWhereConditionQuery(where, getTableColumns(table));
                     let mainData;
                     if(Object.entries(payload).length !== 0) {
                         [mainData] = await tx
@@ -46,7 +46,7 @@ const update = <
                                     .update(subtable)
                                     .set(payload)
                                     .where(
-                                        getConditionQuery(where, getTableColumns(subtable)),
+                                        getWhereConditionQuery(where, getTableColumns(subtable)),
                                     )
                                     .returning();
                             }

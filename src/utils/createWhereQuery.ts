@@ -11,10 +11,10 @@ export const createWhereQuery = <
     where: WhereQuery<TEntity>,
     fullColumns: TFullColumns
 ) => query.where(
-        getConditionQuery(where, fullColumns)
+        getWhereConditionQuery(where, fullColumns)
     );
 
-export function getConditionQuery(where: WhereQuery<any>, fullColumns: FullColumns): SQL | undefined {
+export function getWhereConditionQuery(where: WhereQuery<any>, fullColumns: FullColumns): SQL | undefined {
     if(isSqlQuery(where)) {
         return where;
     }

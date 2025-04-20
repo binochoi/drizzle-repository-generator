@@ -1,7 +1,7 @@
 import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgTableWithColumns, PgTransaction } from "drizzle-orm/pg-core";
 import { DrizzlePgTable, SubTablesWith } from "src/types";
-import { getConditionQuery } from "src/utils/createWhereQuery";
+import { getWhereConditionQuery } from "src/utils/createWhereQuery";
 import { pickObjectProps } from "src/utils/pickObjectProps";
 
 export const createDeleteQuery = <
@@ -13,7 +13,7 @@ TSubTablesWith extends SubTablesWith,
     subTablesWith: TSubTablesWith,
 ) => (data: object) => {
     const mainQuery = dbOrTx.delete(table).where(
-        getConditionQuery(
+        getWhereConditionQuery(
             pickObjectProps(data, getTableColumns(table)),
             getTableColumns(table)
         )
@@ -29,7 +29,7 @@ TSubTablesWith extends SubTablesWith,
                 }
                 const query = dbOrTx.delete(subtable);
                 return query.where(
-                    getConditionQuery(payload, getTableColumns(subtable))
+                    getWhereConditionQuery(payload, getTableColumns(subtable))
                 )
             }
         )
