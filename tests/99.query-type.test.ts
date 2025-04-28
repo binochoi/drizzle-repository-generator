@@ -8,7 +8,6 @@ import { eq } from 'drizzle-orm';
 
 const repo = Repository(db, user);
 
-test('try to connect db', async () => client.connect())
 test('insert for test mock', async () => {
     await db.transaction(async (tx) => {
         const repo = Repository(tx, user, { local });

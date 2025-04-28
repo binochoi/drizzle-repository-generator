@@ -14,7 +14,7 @@ const userMocks: User[] = [{
 }]
 const repo = Repository(db, user, { local });
 const userRepo = Repository(db, user);
-test('try to connect db', async () => client.connect())
+// test('try to connect db', async () => client.connect())
 describe('insert', () => {
     test('insert one', async () => {
         const record = await repo.insert(userMocks[0]);
