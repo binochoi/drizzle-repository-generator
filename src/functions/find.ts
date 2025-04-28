@@ -13,7 +13,7 @@ type ReturningParams = {
 const find = <
     TTable extends PgTableWithColumns<any>,
     TSubTablesWith extends [string, DrizzlePgTable][] | undefined,
-    TSubTablesWithColumns extends TSubTablesWith extends undefined ? {} : NonNullable<TSubTablesWith>[number][1]['_']['columns'],
+    TSubTablesWithColumns extends (TSubTablesWith extends undefined ? {} : NonNullable<TSubTablesWith>[number][1]['_']['columns']),
 >(
     db: PgDatabase<any ,any, any>,
     table: TTable,
