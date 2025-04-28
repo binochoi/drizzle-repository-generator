@@ -67,6 +67,6 @@ test('upsert', async () => {
         name: 'johnzaller',
     };
     await userRepo.insert(upsertMock, { onConflict: 'update' })
-    const user = await userRepo.find({ id: 112 }).returnFirst();
+    const user = await userRepo.find({ id: 112, name: 'johnzaller' }).returnFirst();
     expect(user).toMatchObject(upsertMock);
 });
