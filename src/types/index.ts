@@ -23,6 +23,14 @@ export type FullColumns = {
     [K: string]: PgColumn<any>
 };
 
+export type OrderDirection = 'asc' | 'desc';
+export type OrderBy<TKey extends string> =
+	OrderBy2DArray<TKey> |
+	OrderByArray<TKey> |
+	SQL<any>;
+export type OrderByArray<TKey extends string> = [TKey, OrderDirection];
+export type OrderBy2DArray<TKey extends string> = OrderByArray<TKey>[];
+
 export type EntityBase<
 TTable extends PgTableWithColumns<any>,
 TSubTablesWith extends SubTablesWith

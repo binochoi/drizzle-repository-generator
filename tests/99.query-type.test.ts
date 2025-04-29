@@ -1,12 +1,13 @@
 import { describe, expect, test } from 'vitest'
-import { client, db } from "src/mocks/db";
+import { db } from "src/mocks/db";
 import { user, userLocal as local } from "src/mocks/schema";
 import { Repository } from "src/Repository";
-import { eq } from 'drizzle-orm';
+import { OrderBy } from 'src/types';
 
 
 
 const repo = Repository(db, user);
+const repoWith = Repository(db, user, { local });
 
 test('insert for test mock', async () => {
     await db.transaction(async (tx) => {
@@ -23,8 +24,23 @@ test('insert for test mock', async () => {
     })
 })
 describe('complex query', async () => {
+    const find = (orderBy: OrderBy<any>) => repo.find().returnMany({
+        limit: 5,
+        offset: 0,
+        orderBy,
+    });
+    test('find asc', async () => {
+        const [record] = await find([
+            ['id', 'asc'],
+        ]);
+        expect(record.id).lessThan(100);
+    })
+    test('find desc', async () => {
+        const [record] = await find(['id', 'desc']);
+        expect(record.id).greaterThan(100);
+    })
     test('find intersection array', async () => {
-        const record = await repo.with('local').find([
+        const record = await repoWith.with('local').find([
             ['id', '>', 60],
             ['id', '<', 80],
         ]).returnMany({
@@ -34,7 +50,7 @@ describe('complex query', async () => {
         expect(record.length).toBe(10);
     })
     test('find object query', async () => {
-        const record = await repo.with('local').find({
+        const record = await repoWith.with('local').find({
             id: 33,
         }).returnFirst();
         expect(record).toMatchObject({
@@ -43,7 +59,9 @@ describe('complex query', async () => {
     })
     test('update with array query', async () => {
         const record = await repo
-            .update({ name: 'updated' })
+            .update({
+                name: 'updated',
+            })
             .where(['id', '=', 33])
         expect(record).toMatchObject({ name: 'updated', id: 33 });
     })

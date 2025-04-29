@@ -1,13 +1,17 @@
-import { getTableColumns } from "drizzle-orm";
+import { Column, getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgSelectBase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable, Simplify, UnionToIntersection, WhereQuery } from "src/types";
+import { DrizzlePgTable, OrderBy, Simplify, UnionToIntersection, WhereQuery } from "src/types";
 import { createJoinQuery } from "src/utils/createJoinQuery";
+import { createOrderQuery } from "src/utils/createOrderQuery";
 import { createWhereQuery } from "src/utils/createWhereQuery";
 import { mergeObjectArray } from "src/utils/mergeObjectArray";
-
-type ReturningParams = {
+type StrictObject<T> = {
+    [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K]
+}
+type ReturningParams<TEntity extends object> = {
     offset?: number,
     limit?: number,
+    orderBy?: OrderBy<keyof TEntity & string>,
 }
 
 const find = <
@@ -38,18 +42,29 @@ const find = <
         const query = where ? whereQuery : selectQuery;
         if(subTablesWith) {
             const joinQuery = createJoinQuery(query as any, table, subTablesWith);
-            return getReturnBase<TEntity, typeof joinQuery>(joinQuery);
+            return getReturnBase<TEntity, typeof joinQuery>(joinQuery, fullColumns);
         }
-        return getReturnBase<TEntity, typeof whereQuery>(whereQuery);
+        return getReturnBase<TEntity, typeof whereQuery>(
+            whereQuery,
+            fullColumns
+        );
     }
 }
-function getReturnBase<TEntity extends object, TQueryBase extends Omit<PgSelectBase<any, any, any, any, any, any>, 'where'>>(query: TQueryBase) {
+function getReturnBase<TEntity extends object, TQueryBase extends Omit<PgSelectBase<any, any, any, any, any, any>, 'where'>>(
+    query: TQueryBase,
+    fullColumns: Record<string, Column>
+) {
     return {
         returnFirst: async (): Promise<TEntity | null> => (await query.limit(1) as any)[0] || null,
-        returnMany: async ({ limit, offset }: ReturningParams = {}): Promise<TEntity[]> => {
-            return (query as any)
+        returnMany: async ({ limit, offset, orderBy }: ReturningParams<TEntity> = {}): Promise<TEntity[]> => {
+            let queryResult = (query as any)
             .offset(offset || 0)
-            .limit(limit || 200);
+            .limit(limit || 200)
+            if(orderBy) {
+                const state = createOrderQuery(orderBy, fullColumns);
+                return queryResult.orderBy(...(Array.isArray(state) ? state : [state]));
+            }
+            return queryResult;
         },
         // withCount
     }
