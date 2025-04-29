@@ -43,9 +43,7 @@ describe('complex query', async () => {
     })
     test('update with array query', async () => {
         const record = await repo
-            .update({
-                name: 'updated',
-            })
+            .update({ name: 'updated' })
             .where(['id', '=', 33])
         expect(record).toMatchObject({ name: 'updated', id: 33 });
     })
