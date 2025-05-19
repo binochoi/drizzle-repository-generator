@@ -18,7 +18,7 @@ await repo.update(data).where({ id: 1 });
 await repo.delete(where);
 ```
 ## complex query
-### find
+### Finding
 ```ts
 const repo = Repository(db, user, { local });
 await repo.with('local').find({ id }).returnFirst();
@@ -30,19 +30,20 @@ await repo.with('local').find([
     // ...
 ]).returnMany();
 ```
-### DML
+### Mutations
 ```ts
 // update
 await repo.update(data).where({
     id: 1,
     name: 'john',
 });
+// delete
 await repo.delete(data).where([
     'id', '=', 1,
     'name', '=', 'john',
 ]);
 ```
-## transaction
+## Transaction
 ```ts
 await db.transaction((tx) => {
     const userRepo = Repository(tx, user);
