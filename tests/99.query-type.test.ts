@@ -58,12 +58,13 @@ describe('complex query', async () => {
         });
     })
     test('update with array query', async () => {
-        const record = await repo
+        const record = await repoWith
             .update({
                 name: 'updated',
+                password: 'password_is_1234',
             })
             .where(['id', '=', 33])
-        expect(record).toMatchObject({ name: 'updated', id: 33 });
+        expect(record).toMatchObject({ password: 'password_is_1234', id: 33 });
     })
     test('delete with object query', async () => {
         const record = await repo.delete({ id: 30 })

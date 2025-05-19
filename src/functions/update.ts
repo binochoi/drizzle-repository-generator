@@ -1,12 +1,12 @@
 import { getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgTableWithColumns } from "drizzle-orm/pg-core";
-import { DrizzlePgTable, SubTypesToInsertEntity, SubTypesToSelectEntity, UnionToIntersection, WhereQuery } from "src/types";
+import { DrizzlePgTable, SubTablesWith, SubTypesToInsertEntity, SubTypesToSelectEntity, UnionToIntersection, WhereQuery } from "src/types";
 import { getWhereConditionQuery } from "src/utils/createWhereQuery";
 import { pickObjectProps } from "src/utils/pickObjectProps";
 
 const update = <
     TTable extends PgTableWithColumns<any>,
-    TSubTablesWith extends [string, DrizzlePgTable][],
+    TSubTablesWith extends SubTablesWith,
 >(
     db: PgDatabase<any ,any, any>,
     table: TTable,
@@ -14,8 +14,8 @@ const update = <
 ) => {
     return <
         TEntity extends TMainEntity & TSubEntity,
-        TMainEntity extends TTable['$inferSelect'],
-        TSubEntity extends SubTypesToSelectEntity<TSubTablesWith>,
+        TMainEntity extends TTable['$inferInsert'],
+        TSubEntity extends SubTypesToInsertEntity<TSubTablesWith>,
         TResult extends TMainResult & TSubResult,
         TMainResult extends TTable['$inferSelect'],
         TSubResult extends SubTypesToSelectEntity<TSubTablesWith>,
