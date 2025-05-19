@@ -1,50 +1,48 @@
-## TODO
-- DML 할 때 리턴 타입이 payload에 따라 달라져야 함
-- Promise 반환 시 타입에 record 데이터도 껴있는 문제
-
-# prerequisites
-각 테이블들은 같은 이름의 column을 소지하면 안 됨.
-해당 제약조건을 지킨다면 모든 table을 하나의 entity처럼 다룰 수 있음.
-
-# compatible
-- postgres implemented only
-- sqlite considering
-
+# Installation
+```
+pnpm add drizzle-repository-generator
+```
 # How to use
-### find
+## basic
 ```ts
 const repo = Repository(db, user);
+// find
 await repo.find({ id }).returnFirst();
+// insert
+await repo.insert(data);
+// upsert
+await repo.insert(data, { onConflict: 'update' });
+// update
+await repo.update(data).where({ id: 1 });
+// delete
+await repo.delete(where);
 ```
-### find with
+## complex query
+### find
 ```ts
 const repo = Repository(db, user, { local });
 await repo.with('local').find({ id }).returnFirst();
 await repo.with('local').find(['id', '=', 2]).returnFirst();
+await repo.with('local').find(eq(/** ... */)).returnFirst();
 await repo.with('local').find([
-    ['id', '>', 20],
-    ['name', '=', 'john'],
-]).returnMany({
-    limit: 20,
+    ['name', 'like', '%john%'],
+    ['age', '>', 20],
+    // ...
+]).returnMany();
+```
+### DML
+```ts
+// update
+await repo.update(data).where({
+    id: 1,
+    name: 'john',
 });
+await repo.delete(data).where([
+    'id', '=', 1,
+    'name', '=', 'john',
+]);
 ```
-### insert
-```ts
-await repo.insert(data);
-```
-### upsert
-```ts
-await repo.insert(data, { onConflict: 'update' });
-```
-### update
-```ts
-await repo.update(data).where({ id: 1 });
-```
-### delete
-```ts
-await repo.delete(where);
-```
-### transaction
+## transaction
 ```ts
 await db.transaction((tx) => {
     const userRepo = Repository(tx, user);
@@ -54,7 +52,25 @@ await db.transaction((tx) => {
 })
 ```
 
+# compatible
+- **postgres** implemented only
+- **sqlite** considering
+
+# Warn
+- primary key have to fixed to be `id` yet. cause every table mapped by this.
+- tests are not enough. please open issue whenever finding bugs for appreciate.
 
 # TODO
-- [] selective returning column
-- [] selective returning or not
+- [ ] Support selecting specific columns when returning (through select() chain)
+- [ ] Allow choosing whether to return data or not
+- [ ] Remove explicit record type from returning promise
+
+# understanding how to work
+[deepwiki link](https://deepwiki.com/binochoi/drizzle-repository-generator)
+(thx to [regenrek](https://github.com/regenrek))
+
+# contributing
+**docker compose prerequired**
+1. copy .env.example -> .env
+2. docker compose up (for execute pg server)
+3. test your feature with `test` script
