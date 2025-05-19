@@ -29,6 +29,21 @@ await repo.with('local').find([
     ['age', '>', 20],
     // ...
 ]).returnMany();
+
+// orderBy
+await repo.with('local').find({ id }).returnMany({
+    offset: 0,
+    limit: 100,
+    
+    orderBy: ['id', 'desc'],
+    // or
+    orderBy: [
+        ['id', 'desc'],
+        ['name', 'asc'],
+    ],
+    // or
+    orderBy: [asc(...)]
+});
 ```
 ### Mutations
 ```ts
