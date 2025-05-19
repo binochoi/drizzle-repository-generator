@@ -53,7 +53,7 @@ await repo.update(data).where({
     name: 'john',
 });
 // delete
-await repo.delete(data).where([
+await repo.delete([
     'id', '=', 1,
     'name', '=', 'john',
 ]);
