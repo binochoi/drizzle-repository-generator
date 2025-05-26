@@ -1,4 +1,4 @@
-import { and, eq, SQL } from "drizzle-orm";
+import { and, eq, SQL,  } from "drizzle-orm";
 import { PgSelectBase } from "drizzle-orm/pg-core";
 import { Entity, FullColumns, WhereArrayQuery, WhereArrayQueryRow, WhereQuery } from "src/types";
 import { getWhereCondition } from "src/utils/getWhereCondition";
@@ -41,5 +41,5 @@ function isArrayQuery(where: WhereQuery<any>): where is WhereArrayQuery<any> {
     return Array.isArray(where);
 }
 function isSqlQuery(where: WhereQuery<any>): where is SQL {
-    return typeof where === 'function';
+    return 'getSQL' in where;
 }

@@ -18,7 +18,7 @@ export type WhereArrayQueryRow<TEntity extends Entity> = {
     [K in keyof TEntity]: [K, WhereCondition, TEntity[K]]
 }[keyof TEntity];
 export type WhereArrayQuery<TEntity extends Entity> = WhereArrayQueryRow<TEntity>[];
-export type WhereQuery<TEntity extends Entity> = WhereObjectQuery<TEntity> | WhereArrayQuery<TEntity> | WhereArrayQueryRow<TEntity> | SQL<any>;
+export type WhereQuery<TEntity extends Entity> = WhereObjectQuery<TEntity> | WhereArrayQuery<TEntity> | WhereArrayQueryRow<TEntity>;
 export type FullColumns = {
     [K: string]: PgColumn<any>
 };

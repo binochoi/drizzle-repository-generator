@@ -3,6 +3,7 @@ import { db } from "src/mocks/db";
 import { user, userLocal as local } from "src/mocks/schema";
 import { Repository } from "src/Repository";
 import { OrderBy } from 'src/types';
+import { gt } from 'drizzle-orm';
 
 
 
@@ -56,6 +57,12 @@ describe('complex query', async () => {
         expect(record).toMatchObject({
             id: 33,
         });
+    })
+    test('find sql query', async () => {
+        const [record] = await repo.find(gt(user.id, 32)).returnMany({
+            orderBy: ['id', 'asc'],
+        });
+        expect(record?.id).toBe(33);
     })
     test('update with array query', async () => {
         const record = await repoWith
