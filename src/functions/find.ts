@@ -5,9 +5,6 @@ import { createJoinQuery } from "src/utils/createJoinQuery";
 import { createOrderQuery } from "src/utils/createOrderQuery";
 import { createWhereQuery } from "src/utils/createWhereQuery";
 import { mergeObjectArray } from "src/utils/mergeObjectArray";
-type StrictObject<T> = {
-    [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K]
-}
 type ReturningParams<TEntity extends object> = {
     offset?: number,
     limit?: number,
