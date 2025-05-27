@@ -5,6 +5,7 @@ pnpm add drizzle-repository-generator
 # How to use
 ## basic
 ```ts
+import { Repository } from 'drizzle-repository-generator'
 const repo = Repository(db, user);
 // find
 await repo.find({ id }).returnFirst();
