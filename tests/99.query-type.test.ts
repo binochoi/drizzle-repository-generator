@@ -58,6 +58,19 @@ describe('complex query', async () => {
             id: 33,
         });
     })
+    test('find like query', async () => {
+        await repoWith.insert({
+            id: 1500,
+            mail: 'mockmail@example.com',
+            password: 'mockpassword',
+        });
+        const record = await repoWith.find([
+            ['mail', 'like', '%@example.com%'],
+        ]).returnFirst();
+        expect(record).toMatchObject({
+            id: 1500,
+        });
+    })
     test('find sql query', async () => {
         const [record] = await repo.find(gt(user.id, 32)).returnMany({
             orderBy: ['id', 'asc'],

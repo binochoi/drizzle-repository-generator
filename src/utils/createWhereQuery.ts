@@ -32,7 +32,12 @@ export function getWhereConditionQuery(where: WhereQuery<any>, fullColumns: Full
 }
 function getConditionOfArrayQueryRow(where: WhereArrayQueryRow<any>, fullColumns: FullColumns) {
     const [key, condition, val] = where;
-    return getWhereCondition(condition)(val, fullColumns[key as any]);
+    const whereCondition = getWhereCondition(condition);
+    const column = fullColumns[key as any];
+    if(condition === 'like') {
+        return whereCondition(column, val);
+    }
+    return getWhereCondition(condition)(val, column);
 }
 function is2DArrayQuery(where: WhereQuery<any>): where is WhereArrayQueryRow<any> {
     return Array.isArray(where) && Array.isArray(where[0]);
