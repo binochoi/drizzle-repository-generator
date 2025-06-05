@@ -91,3 +91,6 @@ await db.transaction((tx) => {
 1. copy .env.example -> .env
 2. docker compose up (for execute pg server)
 3. test your feature with `test` script
+
+# Todo
+1. deprecate `types` object
