@@ -78,6 +78,7 @@ await db.transaction((tx) => {
 - tests are not enough. please open issue whenever finding bugs for appreciate.
 
 # TODO
+- [ ] Update query should to cannot execute without where
 - [ ] Support selecting specific columns when returning (through select() chain)
 - [ ] Allow choosing whether to return data or not
 - [ ] Remove explicit record type from returning promise
