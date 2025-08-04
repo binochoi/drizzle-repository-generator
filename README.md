@@ -78,10 +78,11 @@ await db.transaction((tx) => {
 - tests are not enough. please open issue whenever finding bugs for appreciate.
 
 # TODO
-- [ ] Update query should to cannot execute without where
+- [ ] Update query should to unavailable execute without where
 - [ ] Support selecting specific columns when returning (through select() chain)
 - [ ] Allow choosing whether to return data or not
 - [ ] Remove explicit record type from returning promise
+- [ ] deprecate `types` object
 
 # understanding how to work
 [deepwiki link](https://deepwiki.com/binochoi/drizzle-repository-generator)
@@ -92,6 +93,3 @@ await db.transaction((tx) => {
 1. copy .env.example -> .env
 2. docker compose up (for execute pg server)
 3. test your feature with `test` script
-
-# Todo
-1. deprecate `types` object
