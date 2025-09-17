@@ -1,10 +1,12 @@
 import { Column, getTableColumns } from "drizzle-orm";
 import { PgDatabase, PgSelectBase, PgTableWithColumns } from "drizzle-orm/pg-core";
+import { JoinNullability, SelectResult } from "drizzle-orm/query-builders/select.types";
 import { DrizzlePgTable, OrderBy, Simplify, UnionToIntersection, WhereQuery } from "src/types";
 import { createJoinQuery } from "src/utils/createJoinQuery";
 import { createOrderQuery } from "src/utils/createOrderQuery";
 import { createWhereQuery } from "src/utils/createWhereQuery";
 import { mergeObjectArray } from "src/utils/mergeObjectArray";
+import { IsAny } from "type-fest";
 type ReturningParams<TEntity extends object> = {
     offset?: number,
     limit?: number,
@@ -15,10 +17,12 @@ const find = <
     TTable extends PgTableWithColumns<any>,
     TSubTablesWith extends [string, DrizzlePgTable][] | undefined,
     TSubTablesWithColumns extends (TSubTablesWith extends undefined ? {} : NonNullable<TSubTablesWith>[number][1]['_']['columns']),
+    TSelectBase extends PgSelectBase<any, any, any>,
 >(
     db: PgDatabase<any ,any, any>,
     table: TTable,
-    subTablesWith?: TSubTablesWith,
+    subTablesWith: TSubTablesWith,
+    selectBase?: TSelectBase,
 ) => {
     const subTableColumns = Object.fromEntries(
         subTablesWith?.map(
@@ -34,26 +38,29 @@ const find = <
         TMainEntity extends TTable['$inferSelect'],
         TSubEntity extends TSubTablesWith extends undefined ? {} : UnionToIntersection<NonNullable<TSubTablesWith>[number][1]['$inferSelect']>,
     >(where?: WhereQuery<TEntity>) => {
-        const selectQuery = createSelectQuery(db, table, subTablesWith || []);
+        const selectQuery = selectBase || createSelectQuery(db, table, subTablesWith || []);
         const whereQuery = createWhereQuery(selectQuery, where || {}, fullColumns);
         const query = where ? whereQuery : selectQuery;
         if(subTablesWith) {
             const joinQuery = createJoinQuery(query as any, table, subTablesWith);
-            return getReturnBase<TEntity, typeof joinQuery>(joinQuery, fullColumns);
+            return getReturnBase<TEntity, typeof joinQuery, TSelectBase>(joinQuery, fullColumns);
         }
-        return getReturnBase<TEntity, typeof whereQuery>(
+        return getReturnBase<TEntity, typeof whereQuery, TSelectBase>(
             whereQuery,
             fullColumns
         );
     }
 }
-function getReturnBase<TEntity extends object, TQueryBase extends Omit<PgSelectBase<any, any, any, any, any, any>, 'where'>>(
+function getReturnBase<TEntity extends object, TQueryBase extends Omit<PgSelectBase<any, any, any, any, any, any>, 'where'>, TSelect extends PgSelectBase<any, any, any>,
+>(
     query: TQueryBase,
     fullColumns: Record<string, Column>
 ) {
+    type Selection = SelectResult<TSelect, 'single', Record<string, JoinNullability>>['_']['selection'];
+    type Result = IsAny<Selection> extends true ? TEntity : Selection;
     return {
-        returnFirst: async (): Promise<TEntity | null> => (await query.limit(1) as any)[0] || null,
-        returnMany: async ({ limit, offset, orderBy }: ReturningParams<TEntity> = {}): Promise<TEntity[]> => {
+        returnFirst: async (): Promise<Result | null> => (await query.limit(1) as any)[0] || null,
+        returnMany: async ({ limit, offset, orderBy }: ReturningParams<Result> = {}): Promise<Result[]> => {
             let queryResult = (query as any)
             .offset(offset || 0)
             .limit(limit || 200)

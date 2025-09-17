@@ -3,7 +3,7 @@ import { db } from "src/mocks/db";
 import { user, userLocal as local } from "src/mocks/schema";
 import { Repository } from "src/Repository";
 import { OrderBy } from 'src/types';
-import { gt } from 'drizzle-orm';
+import { count, gt } from 'drizzle-orm';
 
 
 

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { db, client } from 'src/mocks/db';
 import { user, userLocal as local, userOauth as oauth } from 'src/mocks/schema';
 import { Repository } from 'src/Repository';
-import { sql } from 'drizzle-orm';
+import { count, getTableColumns, sql } from 'drizzle-orm';
 
 type User = Omit<typeof user.$inferSelect & typeof local.$inferSelect, 'id'>;
 
@@ -25,6 +25,14 @@ describe('find', () => {
     test('find with join', async () => {
         const record = await repo.with('local').find().returnFirst();
         expect(record).toMatchObject(userMocks[0]);
+    })
+})
+describe('select', () => {
+    test('select count', async () => {
+        const record = await repo.select({
+            count: count(),
+        }).find().returnFirst();
+        expect(record).toMatchObject({ count: 1 });
     })
 })
 const updateMock = { name: 'a', password: 'gooooo' };

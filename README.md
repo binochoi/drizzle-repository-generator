@@ -7,8 +7,13 @@ pnpm add drizzle-repository-generator
 ```ts
 import { Repository } from 'drizzle-repository-generator'
 const repo = Repository(db, user);
+
 // find
 await repo.find({ id }).returnFirst();
+// find with select
+const repo = Repository(db, user, { local });
+repo.select({ id: user.id }).find({ id }).returnFirst();
+repo.select({ count: count() }).find({ id }).returnFirst();
 // insert
 await repo.insert(data);
 // upsert
@@ -79,7 +84,7 @@ await db.transaction((tx) => {
 
 # TODO
 - [ ] Update query should to unavailable execute without where
-- [ ] Support selecting specific columns when returning (through select() chain)
+- [x] Support selecting specific columns when returning (through select() chain)
 - [ ] Allow choosing whether to return data or not
 - [ ] Remove explicit record type from returning promise
 - [ ] deprecate `types` object

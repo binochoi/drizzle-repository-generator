@@ -4,6 +4,7 @@ import find from "./functions/find";
 import insert from "./functions/insert";
 import update from "./functions/update";
 import remove from "./functions/delete";
+import select from "./functions/select";
 
 export const Repository = <
     TTable extends PgTableWithColumns<any>,
@@ -30,7 +31,8 @@ export const Repository = <
     }
     return {
         with: withFn,
-        find: find(db, table),
+        select: select(db, table, subTables),
+        find: find(db, table, subTables),
         insert: insert(db, table, subTables),
         update: update(db, table, subTables),
         delete: remove(db, table, subTables),
