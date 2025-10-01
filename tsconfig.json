@@ -23,7 +23,7 @@
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false,
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": false,
     "baseUrl": ".",
     "outDir": "dist",

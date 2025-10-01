@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
-import { db } from "src/mocks/db";
+import { db } from "src/mocks/db/postgres-js";
 import { user, userLocal as local } from "src/mocks/schema";
 import { Repository } from "src/Repository";
 import { OrderBy } from 'src/types';
-import { count, gt } from 'drizzle-orm';
+import { gt } from 'drizzle-orm';
 
 
 
@@ -85,6 +85,20 @@ describe('complex query', async () => {
             })
             .where(['id', '=', 33])
         expect(record).toMatchObject({ password: 'password_is_1234', id: 33 });
+    })
+    test('reuse finded row that have timestamp', async () => {
+        const findRecord = await repoWith.find({ id: 33 }).returnFirst();
+        const insertRecord = await repoWith.insert({
+            password: 'asdas',
+            name: 'insert record',
+        });
+        const updated = await repoWith.update({
+            name: 'not throwed?',
+            createdAt: new Date(),
+        }).where({ id: 3 })
+        expect(findRecord?.createdAt instanceof Date).toBe(true)
+        expect(insertRecord?.createdAt instanceof Date).toBe(true)
+        expect(updated?.createdAt instanceof Date).toBe(true)
     })
     test('delete with object query', async () => {
         const record = await repo.delete({ id: 30 })

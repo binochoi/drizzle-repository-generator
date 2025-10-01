@@ -1,13 +1,12 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const user = pgTable('users', {
     id: serial('id').primaryKey(),
-    name: varchar('name', {
-      length: 15,
-    }).unique(),
+    name: varchar('name', { length: 15 }).unique(),
     mail: varchar('mail'),
     phoneNumber: varchar('phonenumber'),
+    createdAt: timestamp('createdAt').defaultNow(),
 });
 
 export const userOauth = pgTable('users_social', {
@@ -17,7 +16,8 @@ export const userOauth = pgTable('users_social', {
 })
 export const userLocal = pgTable('users_local', {
   id: integer('id').primaryKey(),
-  password: varchar('password', { length: 60 }).notNull()
+  password: varchar('password', { length: 60 }).notNull(),
+  localCreatedAt: timestamp('createdAt').defaultNow(),
 })
 
 
