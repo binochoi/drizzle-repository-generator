@@ -37,6 +37,10 @@ function getConditionOfArrayQueryRow(where: WhereArrayQueryRow<any>, fullColumns
     if(condition === 'like') {
         return whereCondition(column, val);
     }
+    /**
+     * @warn
+     * val, column 위치가 바뀌면 테스트는 잘 되는데, 바뀌어야 할 이유를 인지하지 못했음.
+     */
     return getWhereCondition(condition)(val, column);
 }
 function is2DArrayQuery(where: WhereQuery<any>): where is WhereArrayQueryRow<any> {
